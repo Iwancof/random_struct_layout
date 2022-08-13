@@ -17,7 +17,7 @@ keywords = ["security", "attribute", "macro", "obfuscation"]
 proc-macro = true
 
 [dependencies]
-syn = { version = "*", features = ["full"]}
-proc-macro2 = "*"
-quote = "*"
-rand = "*"
+syn = { version = "^1.0.99", features = ["full"]}
+proc-macro2 = "^1.0.43"
+quote = "^1.0.21"
+rand = "^0.8.5"
