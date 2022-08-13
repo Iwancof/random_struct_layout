@@ -28,7 +28,7 @@ fn main() {
 
     println!("{:x?}", d);
 
-    // type punning is not defined behivair
+    // type punning is not defined behavior
     let raw_memory_slice =
         unsafe { core::slice::from_raw_parts(&d as *const _ as *const u8, 0x20) };
 
