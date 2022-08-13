@@ -7,8 +7,7 @@ description = "The custom attributes to randomize struct members layout"
 categories = ["no-std"]
 readme = "README.md"
 license = "MIT"
-license-file = "LICENSE"
-include = ["src/**/*", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE"]
+include = ["src/**/*", "Cargo.toml", "Cargo.lock", "README.md"]
 repository = "https://github.com/Iwancof/random_struct_layout/"
 keywords = ["security", "attribute", "macro", "obfuscation"]
 
