@@ -1,6 +1,6 @@
 # random_struct_layout
 
-This crate provides custom attributes to randomize struct members layout.
+This crate provides custom attributes to randomize struct members layout like gcc's Randomizing structure layout(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84052)
 
 # Example
 
