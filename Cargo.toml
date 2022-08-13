@@ -10,7 +10,7 @@ license = "MIT"
 license-file = "LICENSE"
 include = ["src/**/*", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE"]
 repository = "https://github.com/Iwancof/random_struct_layout/"
-keywords = ["security", "custom attribute", "macro", "obfuscation", "procedural macro"]
+keywords = ["security", "attribute", "macro", "obfuscation"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
