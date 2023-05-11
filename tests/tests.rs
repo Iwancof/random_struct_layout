@@ -20,13 +20,15 @@ mod tests {
             g: i32,
         }
 
-        assert!((offset::offset_of!(DataStruct::a) == 0 &&
-                  offset::offset_of!(DataStruct::b) == 4 &&
-                  offset::offset_of!(DataStruct::c) == 8 &&
-                  offset::offset_of!(DataStruct::d) == 12 &&
-                  offset::offset_of!(DataStruct::e) == 16 &&
-                  offset::offset_of!(DataStruct::f) == 20 &&
-                  offset::offset_of!(DataStruct::g) == 24));
+        assert!(
+            (offset::offset_of!(DataStruct::a) == 0
+                && offset::offset_of!(DataStruct::b) == 4
+                && offset::offset_of!(DataStruct::c) == 8
+                && offset::offset_of!(DataStruct::d) == 12
+                && offset::offset_of!(DataStruct::e) == 16
+                && offset::offset_of!(DataStruct::f) == 20
+                && offset::offset_of!(DataStruct::g) == 24)
+        );
 
         #[layout_randomize]
         struct RandomizedDataStruct {
@@ -39,13 +41,15 @@ mod tests {
             g: i32,
         }
 
-        assert!(!(offset::offset_of!(RandomizedDataStruct::a) == 0 &&
-                  offset::offset_of!(RandomizedDataStruct::b) == 4 &&
-                  offset::offset_of!(RandomizedDataStruct::c) == 8 &&
-                  offset::offset_of!(RandomizedDataStruct::d) == 12 &&
-                  offset::offset_of!(RandomizedDataStruct::e) == 16 &&
-                  offset::offset_of!(RandomizedDataStruct::f) == 20 &&
-                  offset::offset_of!(RandomizedDataStruct::g) == 24));
+        assert!(
+            !(offset::offset_of!(RandomizedDataStruct::a) == 0
+                && offset::offset_of!(RandomizedDataStruct::b) == 4
+                && offset::offset_of!(RandomizedDataStruct::c) == 8
+                && offset::offset_of!(RandomizedDataStruct::d) == 12
+                && offset::offset_of!(RandomizedDataStruct::e) == 16
+                && offset::offset_of!(RandomizedDataStruct::f) == 20
+                && offset::offset_of!(RandomizedDataStruct::g) == 24)
+        );
     }
 
     #[test]
@@ -136,6 +140,42 @@ mod tests {
     fn empty_debug() {
         #[layout_randomize(Debug)]
         struct Empty {}
+    }
+
+    #[test]
+    fn vis() {
+        mod my_module {
+            use core::default::Default; 
+
+            #[layout_randomize]
+            #[derive(Default)]
+            pub struct DataStruct {
+                pub a: i32,
+                b: i32,
+                c: i32,
+                d: i32,
+                e: i32,
+            }
+        }
+
+        use my_module::DataStruct;
+
+        let mut ds = DataStruct::default();
+        ds.a = 30;
+        // ds.b = 40;
+    }
+
+    #[test]
+    fn dst() {
+        #[layout_randomize]
+        struct HasDST {
+            a: i32,
+            b: i32,
+            c: i32,
+            d: i32,
+            #[dst]
+            dst: [u8],
+        }
     }
 
     // any other tests?

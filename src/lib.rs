@@ -1,3 +1,5 @@
+use std::vec;
+
 #[deny(unsafe_code)]
 use proc_macro::TokenStream;
 use quote::quote;
@@ -10,7 +12,8 @@ struct LayoutRandomizeArgs {
 
 impl Parse for LayoutRandomizeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
-        let debug = if input.peek(syn::Ident) { // TODO: parse multiple args
+        let debug = if input.peek(syn::Ident) {
+            // TODO: parse multiple args
             Some(input.parse()?)
         } else {
             None
@@ -26,43 +29,35 @@ pub fn layout_randomize(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let struct_name = &input.ident;
 
-    let punctuated = if let syn::Fields::Named(ref mut name) = input.fields {
+    let punctuated = if let syn::Fields::Named(ref mut field) = input.fields {
         // punctuated has field name.
-        &mut name.named
+        &mut field.named
     } else {
         panic!("layout_randomize only supports named struct");
     };
 
-    let mut vector: Vec<syn::Field> = Vec::new();
+    let mut members: Vec<syn::Field> = Vec::new();
     while let Some(pair) = punctuated.pop() {
-        vector.push(pair.into_tuple().0);
-    }
-
-
-    let mut fields = quote! {};
-    for v in vector.iter() {
-        let id = v.ident.clone().unwrap(); // since punctuated has fields name, this unwrap will
-                                           // never panic.
-        fields = quote! {
-            .field(stringify!(#id), &self.#id)
-            #fields
-        };
-    }
-
-    use rand::{rngs::OsRng, seq::SliceRandom};
-    vector.shuffle(&mut OsRng);
-
-    for v in vector {
-        punctuated.push(v);
+        members.push(pair.into_tuple().0);
     }
 
     let debug_impl = if let Some(debug_ident) = args.debug {
+        let mut debug_impl_field_method_chain = quote! {};
+        for v in members.iter() {
+            let id = v.ident.clone().unwrap(); // since punctuated has fields name, this unwrap will
+                                               // never panic.
+            debug_impl_field_method_chain = quote! {
+                .field(stringify!(#id), &self.#id)
+                #debug_impl_field_method_chain
+            };
+        }
+
         if debug_ident == "Debug" {
             Some(quote! {
                 impl std::fmt::Debug for #struct_name {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         f.debug_struct(stringify!(#struct_name))
-                            #fields
+                            #debug_impl_field_method_chain
                             .finish()
                     }
                 }
@@ -73,6 +68,37 @@ pub fn layout_randomize(args: TokenStream, input: TokenStream) -> TokenStream {
     } else {
         None
     };
+
+    let dst_indeies: Vec<usize> = members
+        .iter_mut()
+        .enumerate()
+        .filter_map(|(idx, v)| {
+            let dst_attribute_idx = v.attrs.iter().position(|attr| attr.path.is_ident("dst"))?;
+            v.attrs.remove(dst_attribute_idx); // remove #[dst]
+
+            Some(idx)
+        })
+        .collect();
+
+    assert!(dst_indeies.len() <= 1, "dst attribute too many exists.");
+
+    let member_num = members.len();
+    let shuffle_last_idx = if let Some(dst_idx) = dst_indeies.get(0) {
+        members.swap(*dst_idx, member_num - 1);
+        // dst. move to last
+    
+        *dst_idx + 1
+    } else {
+        0
+    };
+
+    use rand::{rngs::OsRng, seq::SliceRandom};
+    // members[..shuffle_last_idx].shuffle(&mut OsRng);
+    members[..(member_num - shuffle_last_idx)].shuffle(&mut OsRng);
+
+    for v in members {
+        punctuated.push(v);
+    }
 
     let output = quote! {
         #[repr(C)] // TODO: add to input.attrs

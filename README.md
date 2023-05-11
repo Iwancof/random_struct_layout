@@ -5,8 +5,11 @@ This crate provides custom attributes to randomize struct layout, like gcc's Ran
 # Example
 
 ```rust
-use random_struct_layout::layout_randomize;
 use offset;
+use random_struct_layout::layout_randomize;
+
+#[macro_use]
+extern crate random_struct_layout;
 
 #[layout_randomize(Debug)]
 struct Data {
@@ -41,6 +44,15 @@ fn main() {
     */
 
     println!("{:x?}", data); // Debug print order is same as normal one.
-    // Data { a: 10, b: 20, c: 30, d: 30, e: 40 }
+                             // Data { a: 10, b: 20, c: 30, d: 30, e: 40 }
+}
+
+#[layout_randomize]
+struct HasDst {
+    value1: i32,
+    value2: i32,
+
+    #[dst]
+    value3: [u8], // support dst type.
 }
 ```
