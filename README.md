@@ -1,14 +1,14 @@
 # random_struct_layout
 
-This crate provides custom attributes to randomize struct members layout like gcc's Randomizing structure layout(https://lwn.net/Articles/722293/)
+This crate provides custom attributes to randomize struct layout, like gcc's Randomizing structure layout(https://lwn.net/Articles/722293/).
 
 # Example
 
 ```rust
 use random_struct_layout::layout_randomize;
+use offset;
 
-#[layout_randomize]
-#[derive(Debug)]
+#[layout_randomize(Debug)]
 struct Data {
     a: i32,
     b: i32,
@@ -18,7 +18,7 @@ struct Data {
 }
 
 fn main() {
-    let d = Data {
+    let data = Data {
         a: 0x10,
         b: 0x20,
         c: 0x30,
@@ -26,13 +26,21 @@ fn main() {
         e: 0x40,
     };
 
-    println!("{:x?}", d);
+    println!("{}", offset::offset_of!(Data::a));
+    println!("{}", offset::offset_of!(Data::b));
+    println!("{}", offset::offset_of!(Data::c));
+    println!("{}", offset::offset_of!(Data::d));
+    println!("{}", offset::offset_of!(Data::e));
 
-    // type punning is not defined behavior
-    let raw_memory_slice =
-        unsafe { core::slice::from_raw_parts(&d as *const _ as *const u8, 0x20) };
+    /* example output
+    20
+    16
+    0
+    8
+    24
+    */
 
-    println!("{:x?}", raw_memory_slice); // execution result will vary each time.
-                                         // cargo clean -p this_crate && cargo run
+    println!("{:x?}", data); // Debug print order is same as normal one.
+    // Data { a: 10, b: 20, c: 30, d: 30, e: 40 }
 }
 ```
