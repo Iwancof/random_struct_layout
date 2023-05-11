@@ -87,7 +87,7 @@ dependencies = [
 
 [[package]]
 name = "random_struct_layout"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "offset",
  "proc-macro2",

@@ -1,5 +1,3 @@
-use std::vec;
-
 #[deny(unsafe_code)]
 use proc_macro::TokenStream;
 use quote::quote;
