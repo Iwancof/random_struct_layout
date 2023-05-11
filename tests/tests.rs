@@ -167,7 +167,7 @@ mod tests {
 
     #[test]
     fn dst() {
-        #[layout_randomize]
+        #[layout_randomize(Debug)]
         struct HasDST {
             a: i32,
             b: i32,

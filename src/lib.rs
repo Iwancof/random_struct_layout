@@ -47,7 +47,7 @@ pub fn layout_randomize(args: TokenStream, input: TokenStream) -> TokenStream {
             let id = v.ident.clone().unwrap(); // since punctuated has fields name, this unwrap will
                                                // never panic.
             debug_impl_field_method_chain = quote! {
-                .field(stringify!(#id), &self.#id)
+                .field(stringify!(#id), &&self.#id)
                 #debug_impl_field_method_chain
             };
         }
